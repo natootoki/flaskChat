@@ -1,0 +1,35 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+</head>
+<body>
+    <div id="chat">
+        <ul id="messages"></ul>
+        <input id="message_input" autocomplete="off" /><button onclick="sendMessage()">Send</button>
+        <input id="user_input" placeholder="Your username" />
+    </div>
+    
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+    
+        socket.on('receive_message', function(data) {
+            var messageList = document.getElementById('messages');
+            var messageItem = document.createElement('li');
+            messageItem.textContent = data.user + ': ' + data.message;
+            messageList.appendChild(messageItem);
+        });
+    
+        function sendMessage() {
+            var user = document.getElementById('user_input').value; // ユーザ名を入力フィールドから取得
+            var message = document.getElementById('message_input').value;
+            socket.emit('send_message', {'user': user, 'message': message});
+            document.getElementById('message_input').value = '';
+        }
+    </script>
+</body>
+</html>
